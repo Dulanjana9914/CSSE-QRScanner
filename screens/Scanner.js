@@ -2,6 +2,7 @@ import React,{useState,useEffect} from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { BarCodeScanner } from 'expo-barcode-scanner';
 import * as Location from 'expo-location';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function Scanner(){
     const [hasPermission,setHasPermission]=useState(null);
@@ -10,6 +11,7 @@ export default function Scanner(){
     const [errorMsg, setErrorMsg] = useState(null);
     let coordinates=null;
     let token=null;
+    let busID=null;
 
     useEffect(()=>{
         (async ()=>{
@@ -32,6 +34,7 @@ export default function Scanner(){
         const { longitude,latitude } = userLocation.coords;
         const busLocation=JSON.stringify([longitude,latitude]);
         coordinates=busLocation;
+        //GPS Coordinates
         console.log(coordinates);
         
     };
@@ -42,7 +45,11 @@ export default function Scanner(){
         setTimePassed(false);
         await getLocation();
         token=data;
+        //Token
         console.log(token);
+        busID= await AsyncStorage.getItem('bus');
+        //Bus ID
+        console.log(busID);
         alert(`QR code data ${`${token}`} has been scanned`);
         setTimeout(() => setTimePassed(true), 5000);
     };
