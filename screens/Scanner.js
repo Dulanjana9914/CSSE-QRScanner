@@ -39,6 +39,7 @@ export default function Scanner(){
         console.log(coordinates);
         
     };
+    //play sound
     async function playSound() {
         const { sound } = await Audio.Sound.createAsync( require('../assets/sound.mp3')
         );
@@ -59,7 +60,7 @@ export default function Scanner(){
         console.log(busID);
         ToastAndroid.showWithGravity(
             "QR Code Scanned Successfully",
-            ToastAndroid.SHORT,
+            ToastAndroid.LONG,
             ToastAndroid.CENTER
           );
         setTimeout(() => setTimePassed(true), 5000);
