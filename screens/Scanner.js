@@ -3,12 +3,14 @@ import { View, Text, StyleSheet } from 'react-native';
 import { BarCodeScanner } from 'expo-barcode-scanner';
 import * as Location from 'expo-location';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Audio } from 'expo-av';
 
 export default function Scanner(){
     const [hasPermission,setHasPermission]=useState(null);
     const [scanned,setScanned]=useState(false);
     const [timePassed,setTimePassed]=useState(false);
     const [errorMsg, setErrorMsg] = useState(null);
+    const [sound, setSound] = React.useState();
     let coordinates=null;
     let token=null;
     let busID=null;
@@ -21,9 +23,8 @@ export default function Scanner(){
             //Location permission
             const {locationpermission}=await Location.requestForegroundPermissionsAsync();
             if (locationpermission !== 'granted') {
-               setErrorMsg('Location permission not granted');
-               alert(errorMsg);
-              return;
+               setErrorMsg('Location permission not granted'); 
+               return;
             }
         })();
     },[]);
@@ -38,11 +39,30 @@ export default function Scanner(){
         console.log(coordinates);
         
     };
-     
+    //  //play mp3 sound
+    //     const playSound = async () => {
+    //         const soundObject = new Audio.Sound();
+    //         try {
+    //             await soundObject.loadAsync(require('../assets/sound.mp3'));
+    //             await soundObject.playAsync();
+    //             // Your sound is playing!
+    //         } catch (error) {
+    //             // An error occurred!
+    //         }}
+    async function playSound() {
+        console.log('Loading Sound');
+        const { sound } = await Audio.Sound.createAsync( require('../assets/sound.mp3')
+        );
+        setSound(sound);
+    
+        console.log('Playing Sound');
+        await sound.playAsync();
+      }
     //Barcode scanner
     const handleBarCodeScanned = async ({data}) =>{
         setScanned(true);
         setTimePassed(false);
+        playSound();
         await getLocation();
         token=data;
         //Token
@@ -50,7 +70,7 @@ export default function Scanner(){
         busID= await AsyncStorage.getItem('bus');
         //Bus ID
         console.log(busID);
-        alert(`QR code data ${`${token}`} has been scanned`);
+        alert(`QR Code Scanned Successfully!`);
         setTimeout(() => setTimePassed(true), 5000);
     };
    
