@@ -1,5 +1,5 @@
 import React,{useState,useEffect} from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet,ToastAndroid } from 'react-native';
 import { BarCodeScanner } from 'expo-barcode-scanner';
 import * as Location from 'expo-location';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -39,23 +39,10 @@ export default function Scanner(){
         console.log(coordinates);
         
     };
-    //  //play mp3 sound
-    //     const playSound = async () => {
-    //         const soundObject = new Audio.Sound();
-    //         try {
-    //             await soundObject.loadAsync(require('../assets/sound.mp3'));
-    //             await soundObject.playAsync();
-    //             // Your sound is playing!
-    //         } catch (error) {
-    //             // An error occurred!
-    //         }}
     async function playSound() {
-        console.log('Loading Sound');
         const { sound } = await Audio.Sound.createAsync( require('../assets/sound.mp3')
         );
         setSound(sound);
-    
-        console.log('Playing Sound');
         await sound.playAsync();
       }
     //Barcode scanner
@@ -70,7 +57,11 @@ export default function Scanner(){
         busID= await AsyncStorage.getItem('bus');
         //Bus ID
         console.log(busID);
-        alert(`QR Code Scanned Successfully!`);
+        ToastAndroid.showWithGravity(
+            "QR Code Scanned Successfully",
+            ToastAndroid.SHORT,
+            ToastAndroid.CENTER
+          );
         setTimeout(() => setTimePassed(true), 5000);
     };
    
