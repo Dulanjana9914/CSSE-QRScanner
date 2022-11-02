@@ -4,6 +4,8 @@ import { BarCodeScanner } from 'expo-barcode-scanner';
 import * as Location from 'expo-location';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Audio } from 'expo-av';
+import axios from "axios";
+import Constants from "./Constants/Constants";
 
 export default function Scanner(){
     const [hasPermission,setHasPermission]=useState(null);
@@ -11,7 +13,8 @@ export default function Scanner(){
     const [timePassed,setTimePassed]=useState(false);
     const [errorMsg, setErrorMsg] = useState(null);
     const [sound, setSound] = React.useState();
-    let coordinates=null;
+    let coordinates=[];
+    let arr=[];
     let token=null;
     let busID=null;
 
@@ -32,11 +35,17 @@ export default function Scanner(){
     //Get location coordinates
     const getLocation = async () => {
         const userLocation = await Location.getCurrentPositionAsync();
-        const { longitude,latitude } = userLocation.coords;
-        const busLocation=JSON.stringify([longitude,latitude]);
-        coordinates=busLocation;
+        const { longitude } = userLocation.coords;
+        const { latitude } = userLocation.coords;
+        var busLocation1=JSON.stringify(longitude);
+        var busLocation2=JSON.stringify(latitude);
+        var number1 = parseFloat(busLocation1);
+        var number2 = parseFloat(busLocation2);
+        coordinates.push(number1);
+        coordinates.push(number2);
         //GPS Coordinates
         console.log(coordinates);
+        
         
     };
     //play sound
@@ -63,6 +72,16 @@ export default function Scanner(){
             ToastAndroid.LONG,
             ToastAndroid.CENTER
           );
+          //Send data to backend
+        axios.post(`${Constants.backend_url}/trip/start`,{
+            token:token,
+            busID:busID,
+            coordinates:coordinates
+        }).then((response)=>{
+            console.log(response.data);
+        }).catch((error)=>{
+            console.log(error);
+        });
         setTimeout(() => setTimePassed(true), 5000);
     };
    
