@@ -8,6 +8,9 @@ import axios from "axios";
 import Constants from "./Constants/Constants";
 
 export default function Scanner(){
+    /**
+      * @description : Set initial state of the variables
+   */
     const [hasPermission,setHasPermission]=useState(null);
     const [scanned,setScanned]=useState(false);
     const [timePassed,setTimePassed]=useState(false);
@@ -20,10 +23,14 @@ export default function Scanner(){
 
     useEffect(()=>{
         (async ()=>{
-            //Camera permission
+                /**
+                  * @description : Request camera permissions
+                */
             const {status} =await BarCodeScanner.requestPermissionsAsync();
                setHasPermission(status === 'granted');
-            //Location permission
+                 /**
+                  * @description : Request location permissions
+                */
             const {locationpermission}=await Location.requestForegroundPermissionsAsync();
             if (locationpermission !== 'granted') {
                setErrorMsg('Location permission not granted'); 
@@ -32,8 +39,11 @@ export default function Scanner(){
         })();
     },[]);
 
-    //Get location coordinates
     const getLocation = async () => {
+        /**
+             * @description : Get location coordinates
+             * @returns : location coordinates
+        */
         const userLocation = await Location.getCurrentPositionAsync();
         const { longitude } = userLocation.coords;
         const { latitude } = userLocation.coords;
@@ -50,6 +60,10 @@ export default function Scanner(){
     };
     //play sound
     async function playSound() {
+        /**
+        * @description : play sound when the user scan the QR code
+        * @returns : mp3 file
+        */
         const { sound } = await Audio.Sound.createAsync( require('../assets/sound.mp3')
         );
         setSound(sound);
@@ -68,12 +82,20 @@ export default function Scanner(){
         //Bus ID
         console.log(busID);
         ToastAndroid.showWithGravity(
+             /**
+             * @description : Display toast message after the user scan the QR code
+             * @returns : Toast message
+            */
             "QR Code Scanned Successfully",
             ToastAndroid.LONG,
             ToastAndroid.CENTER
           );
           //Send data to backend
         axios.post(`${Constants.backend_url}/trip/start`,{
+            /**
+             * @description : pass location data, bus id and token id to the backend
+             * @param : busID, token, coordinates
+            */
             token:token,
             busID:busID,
             coordinates:coordinates

@@ -10,6 +10,9 @@ export default function BusID(){
     const navigation = useNavigation();
 
     const handlesubmit=()=>{
+       /**
+         * @description this function call when the user click on the continue button and checks if bus id is empty
+       */
         if(busID!=null){
         navigation.navigate('Scanner',{busID});
         AsyncStorage.setItem("bus", busID);
